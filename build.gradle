@@ -1,8 +1,10 @@
+apply plugin: 'java'
+
 buildscript { // buildscript 代码块中脚本优先执行
 
 	// ext 用于定义动态属性
 	ext {
-		springBootVersion = '2.0.0.M2'
+		springBootVersion = '2.1.0.RELEASE'
 	}
 
 	// 使用了 Maven 的中央仓库（也可以指定其他仓库）
@@ -15,17 +17,33 @@ buildscript { // buildscript 代码块中脚本优先执行
 
 	// 依赖关系
 	dependencies {
-
 		// classpath 声明说明了在执行其余的脚本时，ClassLoader 可以使用这些依赖项
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE"
+        // classpath "org.springframework:springloaded:2.1.0.RELEASE"
+        classpath "org.springframework.boot:spring-boot-devtools:2.1.0.RELEASE"
 	}
 }
 
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+}
+
 // 使用插件
-apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+
+// 使用idea热部署
+/*idea {
+    module {
+        inheritOutputDirs = false
+        outputDir = file("$buildDir/classes/main/")
+        testOutputDir = file("$buildDir/classes/test/")
+    }
+}*/
 
 // 指定了生成的编译文件的版本，默认是打成了 jar 包
 version = '1.0.0'
@@ -43,22 +61,29 @@ repositories {
 
 // 依赖关系
 dependencies {
-
 	// 该依赖用于编译阶段
-	compile('org.springframework.boot:spring-boot-starter-web')
-	
+	compile 'org.springframework.boot:spring-boot-starter-web'
 	// 添加 Thymeleaf 的依赖
-	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
-
+	compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	// 添加 Spring Data JPA 的依赖
-	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	
+	compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// 添加 Spring Boot Devtools 的依赖 实现热部署
+    // developmentOnly("org.springframework.boot:spring-boot-devtools")
+	compile 'org.springframework.boot:spring-boot-devtools'
 	// 添加 MySQL 连接驱动的依赖
-	compile('mysql:mysql-connector-java:6.0.5')
-
+	compile 'mysql:mysql-connector-java:8.0.11'
+    // 添加Apache Commons Lang依赖
+    compile 'org.apache.commons:commons-lang3:3.6'
+	// 添加Spring Security依赖
+	compile 'org.springframework.boot:spring-boot-starter-security'
+	// 添加Thymeleaf Spring Security依赖
+	compile 'org.thymeleaf.extras:thymeleaf-extras-springsecurity4:3.0.4.RELEASE'
 	// 添加 H2 的依赖
-	runtime('com.h2database:h2:1.4.196')
-	
+	runtime 'com.h2database:h2:1.4.196'
 	// 该依赖用于测试阶段
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+bootRun{
+	sourceResources sourceSets.main
 }
